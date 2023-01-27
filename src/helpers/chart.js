@@ -6,11 +6,12 @@ import tempColoring from "./tempColoring";
 export default function render(dataset, baseTemperature, ref, width, height) {
   const svg = d3.select(ref.current);
 
-  const xValue = d => d["year"];
-  const yValue = d => d["month"] - 1;
-  const monthStr = d => d["monthStr"];
-  const variance = d => Math.round(d["variance"] * 10) / 10;
-  const currTemp = d => Math.round((baseTemperature + d["variance"]) * 10) / 10;
+  const xValue = (d) => d["year"];
+  const yValue = (d) => d["month"] - 1;
+  const monthStr = (d) => d["monthStr"];
+  const variance = (d) => Math.round(d["variance"] * 10) / 10;
+  const currTemp = (d) =>
+    Math.round((baseTemperature + d["variance"]) * 10) / 10;
 
   // Initiate the svg sizing for the visualization
   const margin = { top: 100, right: 60, bottom: 150, left: 100 };
@@ -64,7 +65,7 @@ export default function render(dataset, baseTemperature, ref, width, height) {
     color8: "rgb(253, 174, 97)",
     color9: "rgb(244, 109, 67)",
     color10: "rgb(215, 48, 39)",
-    color11: "rgb(165, 0, 38)"
+    color11: "rgb(165, 0, 38)",
   }; // Colors will be assigned correspondingly to the increase in temp (1 - coldest, 11 - warmest)
 
   // Initiate a heat map
@@ -86,11 +87,11 @@ export default function render(dataset, baseTemperature, ref, width, height) {
   // Create axes
   const xAxis = d3
     .axisBottom(xScale)
-    .tickFormat(d => d3.timeFormat("%Y")(new Date(0).setFullYear(d)))
+    .tickFormat((d) => d3.timeFormat("%Y")(new Date(0).setFullYear(d)))
     .tickSizeOuter(0);
   const yAxis = d3
     .axisLeft(yScale)
-    .tickFormat(d => d3.timeFormat("%B")(new Date(0).setMonth(d)));
+    .tickFormat((d) => d3.timeFormat("%B")(new Date(0).setMonth(d)));
 
   const xAxisG = heatmap
     .append("g")
@@ -148,20 +149,17 @@ export default function render(dataset, baseTemperature, ref, width, height) {
     .data(dataset)
     .enter()
     .append("rect")
-    .attr("x", d => xScale(xValue(d)))
-    .attr("y", d => yScale(yValue(d) - 0.5))
+    .attr("x", (d) => xScale(xValue(d)))
+    .attr("y", (d) => yScale(yValue(d) - 0.5))
     .attr("width", cellWidth)
     .attr("height", cellHeight)
-    .attr("fill", d => tempColoring(currTemp(d), colorPalette, legendArr)) //fill with palette accordingly
+    .attr("fill", (d) => tempColoring(currTemp(d), colorPalette, legendArr)) //fill with palette accordingly
     .attr("class", "cell")
-    .attr("data-year", d => xValue(d))
-    .attr("data-month", d => yValue(d))
-    .attr("data-temp", d => currTemp(d))
-    .on("mouseover", d => {
-      tooltip
-        .transition()
-        .duration(200)
-        .style("opacity", 0.9);
+    .attr("data-year", (d) => xValue(d))
+    .attr("data-month", (d) => yValue(d))
+    .attr("data-temp", (d) => currTemp(d))
+    .on("mouseover", (d) => {
+      tooltip.transition().duration(200).style("opacity", 0.9);
       tooltip
         .html(
           `${xValue(d)} - ${monthStr(d)}
@@ -172,11 +170,8 @@ export default function render(dataset, baseTemperature, ref, width, height) {
         .style("top", d3.event.pageY + "px")
         .attr("data-year", xValue(d));
     })
-    .on("mouseout", d => {
-      tooltip
-        .transition()
-        .duration(500)
-        .style("opacity", 0);
+    .on("mouseout", (d) => {
+      tooltip.transition().duration(500).style("opacity", 0);
     });
 
   // Add the legend to the visualization
@@ -212,7 +207,7 @@ export default function render(dataset, baseTemperature, ref, width, height) {
     .attr("transform", `translate(0, ${innerHeight - 10})`)
     .attr("width", legendBarWidth)
     .attr("height", 20)
-    .attr("fill", d => tempColoring(d, colorPalette, legendArr)); //fill with palette accordingly
+    .attr("fill", (d) => tempColoring(d, colorPalette, legendArr)); //fill with palette accordingly
 }
 
 export { render };
